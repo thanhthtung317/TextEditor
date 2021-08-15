@@ -20,6 +20,9 @@ public class TextEditor extends JFrame implements ActionListener, ChangeListener
     JLabel fontLabel;
     JColorChooser fontColorChooser;
     JButton colorChooserBtn;
+    JButton savedButton;
+    JButton undoButton;
+    JButton redoButton;
     JMenuBar menuBar;
     JMenu fileMenu;
     JMenuItem saveItem;
@@ -32,6 +35,9 @@ public class TextEditor extends JFrame implements ActionListener, ChangeListener
     ImageIcon loadIcon;
     ImageIcon exitIcon;
     ImageIcon fileIcon;
+    Originator originator;
+    CareTaker careTaker;
+    int totalArticle = 0, currentArticle = 0;
 
     TextEditor(){
         textArea = new JTextArea();
@@ -52,6 +58,11 @@ public class TextEditor extends JFrame implements ActionListener, ChangeListener
         loadIcon = new ImageIcon("C:\\Users\\ASUS\\OneDrive\\Pictures\\Saved Pictures\\flaticon\\loading2.png");
         exitIcon = new ImageIcon("C:\\Users\\ASUS\\OneDrive\\Pictures\\Saved Pictures\\flaticon\\remove.png");
         fileIcon = new ImageIcon("C:\\Users\\ASUS\\OneDrive\\Pictures\\Saved Pictures\\flaticon\\folder.png");
+        savedButton = new JButton("save");
+        undoButton = new JButton("undo");
+        redoButton = new JButton("redo");
+        originator = new Originator();
+        careTaker = new CareTaker();
 
         scrollPane.setPreferredSize(new Dimension(450, 390));
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -106,15 +117,23 @@ public class TextEditor extends JFrame implements ActionListener, ChangeListener
         textArea.addMouseListener(this);
         textArea.setFont(new Font("MV Boli", Font.PLAIN,20));
 
+        savedButton.addActionListener(new SavedBtnAction());
+        undoButton.addActionListener(new UndoBtnAction());
+        redoButton.addActionListener(new RedoBtnAction());
+
         this.setJMenuBar(menuBar);
         this.add(fontBox);
         this.add(colorChooserBtn);
         this.add(fontLabel);
         this.add(fontSizeSpinner);
         this.add(scrollPane);
+        this.add(savedButton);
+        this.add(undoButton);
+        this.add(redoButton);
+
         this.setIconImage(icon.getImage());
         this.setDefaultCloseOperation(3);
-        this.setSize(500, 500);
+        this.setSize(500, 540);
         this.setTitle("Thanh Tùng Text Editor");
         this.setLayout(new FlowLayout());
         this.setLocationRelativeTo(null);
@@ -189,7 +208,6 @@ public class TextEditor extends JFrame implements ActionListener, ChangeListener
 
     @Override
     public void mouseClicked(MouseEvent e) {
-
     }
 
     @Override
@@ -219,6 +237,60 @@ public class TextEditor extends JFrame implements ActionListener, ChangeListener
     public void mouseExited(MouseEvent e) {
         if (textArea.getText().equals("")){
             textArea.setText("Write something...");
+        }
+    }
+
+    public class SavedBtnAction implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (e.getSource() == savedButton){
+                //take the text from textArea
+                String article = textArea.getText();
+                //saved the text to originator
+                originator.set(article);
+                //add the text in memento to the arrayList in careTaker
+                careTaker.addMemento(originator.storedMemento());
+                //increasing the number of totalArticle and currentArticle
+                totalArticle++;
+                currentArticle++;
+                undoButton.setEnabled(true);
+            }
+        }
+    }
+
+    public class UndoBtnAction implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (e.getSource() == undoButton){
+                //if the current article is less than 0 then we set unable the undoButton
+                if (currentArticle > 0){
+                    currentArticle--;
+                    //take the article from the saved memento and put it in textArea
+                    String article = originator.restoreMemento(careTaker.getMemento(currentArticle));
+                    textArea.setText(article);
+                    redoButton.setEnabled(true);
+                }else {
+                    undoButton.setEnabled(false);
+                }
+            }
+        }
+    }
+
+    public class RedoBtnAction implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (e.getSource() == redoButton){
+                //if the current article is greater than totalArticle then we set unable the redoButton
+                if (currentArticle < (totalArticle - 1) ){
+                    currentArticle++;
+                    //take the article from the saved memento and put it in textArea
+                    String article = originator.restoreMemento(careTaker.getMemento(currentArticle));
+                    textArea.setText(article);
+                    undoButton.setEnabled(true);
+                }else {
+                    redoButton.setEnabled(false);
+                }
+            }
         }
     }
 }
