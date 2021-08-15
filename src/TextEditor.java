@@ -118,8 +118,26 @@ public class TextEditor extends JFrame implements ActionListener, ChangeListener
         textArea.setFont(new Font("MV Boli", Font.PLAIN,20));
 
         savedButton.addActionListener(new SavedBtnAction());
+        savedButton.setPreferredSize(new Dimension(80, 30));
+        savedButton.setFocusable(false);
+        savedButton.setForeground(Color.white);
+        savedButton.setBackground(Color.pink);
+        savedButton.setFont(new Font("MV Boli", Font.PLAIN,15));
+
         undoButton.addActionListener(new UndoBtnAction());
+        undoButton.setPreferredSize(new Dimension(80, 30));
+        undoButton.setFocusable(false);
+        undoButton.setForeground(Color.white);
+        undoButton.setBackground(Color.pink);
+        undoButton.setFont(new Font("MV Boli", Font.PLAIN,15));
+
         redoButton.addActionListener(new RedoBtnAction());
+        redoButton.setPreferredSize(new Dimension(80, 30));
+        redoButton.setFocusable(false);
+        redoButton.setForeground(Color.white);
+        redoButton.setBackground(Color.pink);
+        redoButton.setFont(new Font("MV Boli", Font.PLAIN,15));
+
 
         this.setJMenuBar(menuBar);
         this.add(fontBox);
